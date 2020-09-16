@@ -1,0 +1,47 @@
+<%= form_with(model: interview_schedule, local: true) do |form| %>
+  <% if interview_schedule.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(interview_schedule.errors.count, "error") %> prohibited this interview_schedule from being saved:</h2>
+
+      <ul>
+        <% interview_schedule.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <h3>Interviewer Details</h3>
+  <p>
+    <%= form.label :'Name'%>
+    <%= form.text_field :'interviewer_name' %>
+
+    <%= form.label :'Email'%>
+    <%= form.text_field :'interviewer_email' %>
+  </p>
+
+  <h3>Candidate Details</h3>
+  <p>
+    <%= form.label :'Name'%>
+    <%= form.text_field :'candidate_name' %>
+
+    <%= form.label :'Email'%>
+    <%= form.text_field :'candidate_email' %>
+  </p>
+
+  <h3>Interview Details</h3>
+  <p>
+    <%= form.label :'Date'%>
+    <%= form.date_field :'interview_date' %>
+
+    <%= form.label :'start_time'%>
+    <%= form.time_field :'start_time' %>
+
+    <%= form.label :'end_time'%>
+    <%= form.time_field :'end_time' %>
+  </p>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
