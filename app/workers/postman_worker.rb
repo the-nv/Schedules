@@ -10,7 +10,11 @@ class PostmanWorker
                 if h['type'].eql?('interview_create')
                     ScheduleMailer.interview_create(h['name'], h['email'], h['date'], h['start_time'], h['end_time']).deliver_now
                 else
-                    ScheduleMailer.interview_update(h['name'], h['email'], h['date'], h['start_time'], h['end_time']).deliver_now
+                    if h['type'].eql?('interview_update')
+                        ScheduleMailer.interview_update(h['name'], h['email'], h['date'], h['start_time'], h['end_time']).deliver_now
+                    else
+                        ScheduleMailer.reminder(h['name'], h['email'], h['date'], h['start_time'], h['end_time'], h['message']).deliver_now
+                    end
                 end
         end
     end

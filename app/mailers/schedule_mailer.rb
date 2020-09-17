@@ -32,4 +32,17 @@ class ScheduleMailer < ApplicationMailer
             to: @email,
             subject: 'Interview Details!')
     end
+
+    def reminder(name, email, date, start_time, end_time, message)
+        @name = name
+        @email = email
+        @date = date
+        @start_time = start_time
+        @end_time = end_time
+        @message = message
+
+        mail(from: 'the.n.verma@gmail.com',
+            to: @email,
+            subject: 'Interview Reminder!')
+    end
 end

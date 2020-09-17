@@ -55,6 +55,7 @@ class InterviewsController < ApplicationController
       if @interview.save
         welcome
         interview_create_mail
+        interview_reminder_mail
         format.html { redirect_to interviews_path, notice: 'Interview schedule was successfully created.'}
         format.json { render :show, status: :created, location: @interview }
       else
@@ -177,5 +178,26 @@ class InterviewsController < ApplicationController
             'end_time' => interview_params[:end_time]})
     
         PostmanWorker.perform_async(h, 1)
+    end
+
+    def interview_reminder_mail
+        candidate_params = interview_params[:interviews_users_attributes]["1"][:users]
+
+        h = JSON.generate({ 'type' => 'reminder', 
+            'name' => candidate_params[:name],
+            'email' => candidate_params[:email],
+            'date' => interview_params[:interview_date],
+            'start_time' => interview_params[:start_time],
+            'end_time' => interview_params[:end_time],
+            'message' => '30 min reminder'})
+
+        date = interview_params[:interview_date]
+        start_time = interview_params[:start_time]
+
+        remind_at = date.to_time.to_i + start_time.to_i - 30 * 60
+
+        logger.debug "DEBUGGERRRRR #{Time.at(remind_at)}"
+
+        PostmanWorker.perform_at(remind_at, h, 1)
     end
 end
