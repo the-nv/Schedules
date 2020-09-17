@@ -1,35 +1,72 @@
-<%= form_with(model: interview, local: true) do |form| %>
-  <% if interview.errors.any? %>
+<%= simple_form_for(@interview) do |form| %>
+  <% if @interview.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(interview.errors.count, "error") %> prohibited this interview_schedule from being saved:</h2>
+      <h2><%= pluralize(@interview.errors.count, "error") %> prohibited this interview schedule from being saved:</h2>
 
       <ul>
-        <% interview.errors.full_messages.each do |message| %>
+        <% @interview.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
       </ul>
     </div>
+
+    <% if @interview.users.first.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@interview.users.first.errors.count, "error") %> prohibited this interviewer from being saved:</h2>
+
+        <ul>
+          <% @interview.users.first.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <% if @interview.users.last.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@interview.users.last.errors.count, "error") %> prohibited this candidate from being saved:</h2>
+
+        <ul>
+          <% @interview.users.last.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
   <% end %>
 
-  <h3>Interviewer Details</h3>
-  <p>
-    <%= form.label :'Name'%>
-    <%= form.text_field :'interviewer_name' %>
+    <%= form.simple_fields_for(:interviews_users) do |interviews_user_form| %>
+        <% role = interviews_user_form.object.role %>
 
-    <%= form.label :'Email'%>
-    <%= form.text_field :'interviewer_email' %>
-  </p>
+        <% if role === 0 %>
+            <h3>Interviewer Details</h3>
+        <% else %>
+            <h3>Candidate Details</h3>
+        <% end %>
 
-  <h3>Candidate Details</h3>
-  <p>
-    <%= form.label :'Name'%>
-    <%= form.text_field :'candidate_name' %>
+        <% if request.path === '/interviews/new' %>
+          <% if role === 0 %>
+            <% @current = @interview.users.first %>
+        <% else %>
+            <% @current = @interview.users.last %>
+        <% end %>
+        <% else %>
+          <% @current = @interview.interviews_users.where(:role => role).first.user %>
+        <% end %>
 
-    <%= form.label :'Email'%>
-    <%= form.text_field :'candidate_email' %>
-  </p>
+        <%= interviews_user_form.simple_fields_for(:users,  @current) do |user_form| %>
+            <p>
+                <%= user_form.label :'Name'%>
+                <%= user_form.text_field :'name' %>
+
+                <%= user_form.label :'Email'%>
+                <%= user_form.text_field :'email' %>
+            </p>
+        <% end %>
+    <% end %>
 
   <h3>Interview Details</h3>
+
   <p>
     <%= form.label :'Date'%>
     <%= form.date_field :'interview_date' %>

@@ -21,10 +21,13 @@
         <td> <%= interview.interview_date.strftime("%d %B %Y") %> </td>
         <td> <%= interview.start_time.strftime("%I:%M %p") %> </td>
         <td> <%= interview.end_time.strftime("%I:%M %p") %> </td>
-        <td> <%= interview.users.first.name %> </td>
-        <td> <%= interview.users.first.email %> </td>
-        <td> <%= interview.users.last.name %> </td>
-        <td> <%= interview.users.last.email %> </td>
+        <td> <%= interview.interviews_users.where(:role => 0).first.user.name %> </td>
+        <td> <%= interview.interviews_users.where(:role => 0).first.user.email %> </td>
+        <td> <%= interview.interviews_users.where(:role => 1).first.user.name %> </td>
+        <td> <%= interview.interviews_users.where(:role => 1).first.user.email %> </td>
+        <td> <%= link_to 'show', interview_path(interview) %>
+        <td> <%= link_to 'edit', edit_interview_path(interview) %> </td>
+        <td> <%= link_to 'delete', interview_path(interview), method: :delete, data: { confirm: "sure?" } %> </td>
       </tr>
     <% end %>
   </tbody>
