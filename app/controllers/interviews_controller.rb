@@ -75,26 +75,20 @@ class InterviewsController < ApplicationController
     @interviewer = User.where(:email => interviewer_params[:email])
     @candidate = User.where(:email => candidate_params[:email])
 
-    @entryx = @interview.interviews_users.where(:role => 0).first
-    @entryx.destroy
-
     if !(@interviewer.empty?)
-        @interviewer.update(interviewer_params)
-        @interview.users << @interviewer
+        if @interviewer.update(interviewer_params)
+            @interview.users << @interviewer
+        else
+            @interview.errors.add(:users, "invalid")
+        end
     else
         @interview.users << User.new(interviewer_params)
     end
 
-    @currx = @interview.interviews_users.where(:role => nil).first
-
     logger.debug "DEBUG2 #{@currx.inspect}"
-    @currx.update(:role => 0)
 
     logger.debug "DEBUG2 #{@interview.interviews_users.inspect}"
     # logger.debug "DEBUGGING #{@interview.interviews_users.inspect}"
-
-    @entryy = @interview.interviews_users.where(:role => 1).first
-    @entryy.destroy
 
     if !(@candidate.empty?)
         @candidate.update(candidate_params)
@@ -103,15 +97,22 @@ class InterviewsController < ApplicationController
         @interview.users << User.new(candidate_params)
     end
 
-    @curry = @interview.interviews_users.where(:role => nil).first
-
     logger.debug "DEBUG2 #{@curry.inspect}"
-    @curry.update(:role => 1)
 
     logger.debug "DEBUG2 #{@interview.interviews_users.inspect}"
 
     respond_to do |format|
       if @interview.update(:interview_date => interview_params[:interview_date], :start_time => interview_params[:start_time], :end_time => interview_params[:end_time])
+        @entryx = @interview.interviews_users.where(:role => 0).first
+        @entryx.destroy
+        @currx = @interview.interviews_users.where(:role => nil).first
+        @currx.update(:role => 0)
+
+        @entryy = @interview.interviews_users.where(:role => 1).first
+        @entryy.destroy
+        @curry = @interview.interviews_users.where(:role => nil).first
+        @curry.update(:role => 1)
+        
         format.html { redirect_to @interview, notice: 'Interview schedule was successfully updated.' }
         format.json { render :show, status: :ok, location: @interview }
       else

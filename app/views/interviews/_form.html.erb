@@ -44,14 +44,14 @@
             <h3>Candidate Details</h3>
         <% end %>
 
-        <% if request.path === '/interviews/new' %>
+        <% if request.path === '/interviews/:id/edit' %>
+          <% @current = @interview.interviews_users.where(:role => role).first.user %>
+        <% else %>
           <% if role === 0 %>
             <% @current = @interview.users.first %>
-        <% else %>
-            <% @current = @interview.users.last %>
-        <% end %>
-        <% else %>
-          <% @current = @interview.interviews_users.where(:role => role).first.user %>
+          <% else %>
+              <% @current = @interview.users.last %>
+          <% end %>
         <% end %>
 
         <%= interviews_user_form.simple_fields_for(:users,  @current) do |user_form| %>
