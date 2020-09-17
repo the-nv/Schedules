@@ -28,13 +28,11 @@ class InterviewsController < ApplicationController
 
   # POST /interviews
   # POST /interviews.json
-  def create
+  def create    
     @interview = Interview.new(:interview_date => interview_params[:interview_date], :start_time => interview_params[:start_time], :end_time => interview_params[:end_time])
 
     interviewer_params = interview_params[:interviews_users_attributes]["0"][:users]
     candidate_params = interview_params[:interviews_users_attributes]["1"][:users]
-
-    # logger.debug "INSPECTING #{interviewer_params[:email].inspect}"
 
     @interviewer = User.where(:email => interviewer_params[:email])
     @candidate = User.where(:email => candidate_params[:email])
@@ -55,6 +53,8 @@ class InterviewsController < ApplicationController
 
     respond_to do |format|
       if @interview.save
+        welcome
+        interview_create_mail
         format.html { redirect_to interviews_path, notice: 'Interview schedule was successfully created.'}
         format.json { render :show, status: :created, location: @interview }
       else
@@ -103,6 +103,7 @@ class InterviewsController < ApplicationController
 
     respond_to do |format|
       if @interview.update(:interview_date => interview_params[:interview_date], :start_time => interview_params[:start_time], :end_time => interview_params[:end_time])
+        interview_update_mail
         @entryx = @interview.interviews_users.where(:role => 0).first
         @entryx.destroy
         @currx = @interview.interviews_users.where(:role => nil).first
@@ -139,5 +140,42 @@ class InterviewsController < ApplicationController
 
     def interview_params
         params.require(:interview).permit({interviews_users_attributes: [users: [:name, :email]]}, :interview_date, :start_time, :end_time)
+    end
+
+    def welcome
+        candidate_params = interview_params[:interviews_users_attributes]["1"][:users]
+
+        h = JSON.generate({ 'type' => 'welcome', 
+            'name' => candidate_params[:name],
+            'email' => candidate_params[:email],
+            'message' => "Welcome to interview scheduler!"})
+    
+        PostmanWorker.perform_async(h, 1)
+    end
+
+    def interview_create_mail
+        candidate_params = interview_params[:interviews_users_attributes]["1"][:users]
+
+        h = JSON.generate({ 'type' => 'interview_create', 
+            'name' => candidate_params[:name],
+            'email' => candidate_params[:email],
+            'date' => interview_params[:interview_date],
+            'start_time' => interview_params[:start_time],
+            'end_time' => interview_params[:end_time]})
+    
+        PostmanWorker.perform_async(h, 1)
+    end
+
+    def interview_update_mail
+        candidate_params = interview_params[:interviews_users_attributes]["1"][:users]
+
+        h = JSON.generate({ 'type' => 'interview_update', 
+            'name' => candidate_params[:name],
+            'email' => candidate_params[:email],
+            'date' => interview_params[:interview_date],
+            'start_time' => interview_params[:start_time],
+            'end_time' => interview_params[:end_time]})
+    
+        PostmanWorker.perform_async(h, 1)
     end
 end
