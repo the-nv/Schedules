@@ -61,6 +61,11 @@
 
                 <%= user_form.label :'Email'%>
                 <%= user_form.text_field :'email' %>
+
+                <% if role === 1 %>
+                  <%= user_form.label :resume %>
+                  <%= user_form.file_field :resume %>
+                <% end %>
             </p>
         <% end %>
     <% end %>

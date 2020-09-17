@@ -140,7 +140,7 @@ class InterviewsController < ApplicationController
     end
 
     def interview_params
-        params.require(:interview).permit({interviews_users_attributes: [users: [:name, :email]]}, :interview_date, :start_time, :end_time)
+        params.require(:interview).permit({interviews_users_attributes: [users: [:name, :email, :resume]]}, :interview_date, :start_time, :end_time)
     end
 
     def welcome
