@@ -1,0 +1,40 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Users</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Resume</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @users.each do |user| %>
+
+      <tr>
+        <td> <%= user.id %>
+        <td> <%= user.name %> </td>
+        <td> <%= user.email %> </td>
+        <td> 
+            <% if user.resume_file_name %>
+                <%= link_to 'link', user.resume.url %> 
+            <% else %>
+                NA
+            <% end %>
+        </td>
+        <td> <%= link_to 'show', user_path(user) %>
+        <td> <%= link_to 'edit', edit_user_path(user) %> </td>
+        <td> <%= link_to 'delete', user_path(user), method: :delete, data: { confirm: "sure?" } %> </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New User', new_user_path %>
