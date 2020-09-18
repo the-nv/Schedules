@@ -1,33 +1,24 @@
 class InterviewsController < ApplicationController
     before_action :set_interview, only: [:show, :edit, :update, :destroy]
 
-  # GET /interviews
-  # GET /interviews.json
-  def index
-    @interviews = Interview.all
-    # logger.debug "DEBUGGING #{@interviews.first.interviews_users.where(:role => 0).first.user.email}.inspect"
-  end
+    def index
+      @interviews = Interview.all
+    end
 
-  # GET /interviews/1
-  # GET /interviews/1.json
-  def show
-  end
+    def show
+    end
 
-  # GET /interviews/new
-  def new
-    @interview = Interview.new
-    @interview.interviews_users.build(role: 0).build_user
-    @interview.interviews_users.build(role: 1).build_user
+    def new
+      @interview = Interview.new
+      @interview.interviews_users.build(role: 0).build_user
+      @interview.interviews_users.build(role: 1).build_user
 
-    logger.debug "AAAAA #{@interview.users.last.inspect}"
-  end
+      logger.debug "AAAAA #{@interview.users.last.inspect}"
+    end
 
-  # GET /interviews/1/edit
   def edit
   end
 
-  # POST /interviews
-  # POST /interviews.json
   def create    
     @interview = Interview.new(:interview_date => interview_params[:interview_date], :start_time => interview_params[:start_time], :end_time => interview_params[:end_time])
 
@@ -65,13 +56,9 @@ class InterviewsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /interviews/1
-  # PATCH/PUT /interviews/1.json
   def update
     interviewer_params = interview_params[:interviews_users_attributes]["0"][:users]
     candidate_params = interview_params[:interviews_users_attributes]["1"][:users]
-
-    # logger.debug "INSPECTING #{interviewer_params[:email].inspect}"
 
     @interviewer = User.where(:email => interviewer_params[:email])
     @candidate = User.where(:email => candidate_params[:email])
@@ -86,21 +73,12 @@ class InterviewsController < ApplicationController
         @interview.users << User.new(interviewer_params)
     end
 
-    logger.debug "DEBUG2 #{@currx.inspect}"
-
-    logger.debug "DEBUG2 #{@interview.interviews_users.inspect}"
-    # logger.debug "DEBUGGING #{@interview.interviews_users.inspect}"
-
     if !(@candidate.empty?)
         @candidate.update(candidate_params)
         @interview.users << @candidate
     else
         @interview.users << User.new(candidate_params)
     end
-
-    logger.debug "DEBUG2 #{@curry.inspect}"
-
-    logger.debug "DEBUG2 #{@interview.interviews_users.inspect}"
 
     respond_to do |format|
       if @interview.update(:interview_date => interview_params[:interview_date], :start_time => interview_params[:start_time], :end_time => interview_params[:end_time])
@@ -124,8 +102,6 @@ class InterviewsController < ApplicationController
     end
   end
 
-  # DELETE /interviews/1
-  # DELETE /interviews/1.json
   def destroy
     @interview.destroy
     respond_to do |format|
@@ -195,8 +171,6 @@ class InterviewsController < ApplicationController
         start_time = interview_params[:start_time]
 
         remind_at = date.to_time.to_i + start_time.to_i - 30 * 60
-
-        logger.debug "DEBUGGERRRRR #{Time.at(remind_at)}"
 
         PostmanWorker.perform_at(remind_at, h, 1)
     end

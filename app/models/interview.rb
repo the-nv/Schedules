@@ -25,11 +25,7 @@ class Interview < ApplicationRecord
             current_start = start_time.to_i + interview_date.to_time.to_i
             current_end = end_time.to_i + interview_date.to_time.to_i
 
-            logger.debug "XYZ #{users.first.email.inspect}"
-
             check_user = User.where(:email => users.first.email).first
-
-            # logger.debug "XYZ #{check_id.inspect}"
 
             if check_user
                 schedules = User.where(:id => check_user.id).first.interviews

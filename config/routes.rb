@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resources :interview_schedules
   resources :interviews
+  resources :users
 
   post 'interviews/contact', to: 'interviews#contact'
 
