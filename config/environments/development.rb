@@ -52,7 +52,7 @@ Rails.application.configure do
   config.assets.debug = true
 
   # Suppress logger output for asset requests.
-  config.assets.quiet = true
+  config.assets.quiet = false
 
   # Raises error for missing translations.
   # config.action_view.raise_on_missing_translations = true
@@ -63,4 +63,6 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  config.force_ssl = false
+  config.ssl_config = { hsts: { subdomains: false } }
 end
